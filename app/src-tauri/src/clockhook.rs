@@ -466,7 +466,7 @@ impl Uia {
         EXT_DUMPS.fetch_add(1, Relaxed);
         EXT_DUMP_MAX_US.fetch_max(t.elapsed().as_micros() as u64, Relaxed);
         let sibs: Vec<Rect> = btns.iter().map(btn_rect).collect();
-        if !btns.iter().any(|b| b.class_name == crate::uia::CLOCK_CLASS && btn_rect(b) == clock) {
+        if !btns.iter().any(|b| crate::uia::is_clock_class(&b.class_name) && btn_rect(b) == clock) {
             return (None, format!("ext=none(clock not in dump) tb=[{}]", fmt(&tb)));
         }
         let hit = extend_clock(clock, tb, &sibs);

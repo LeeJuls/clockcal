@@ -16,6 +16,12 @@ use windows::Win32::UI::Accessibility::{
 use windows::Win32::UI::WindowsAndMessaging::{FindWindowExW, FindWindowW};
 
 pub const CLOCK_CLASS: &str = "SystemTray.OmniButton";
+/// Newer Win11 builds (seen on 26300) name the clock/date button this way; the bell stays `OmniButtonRight`.
+pub const CLOCK_CLASS_LEFT: &str = "SystemTray.OmniButtonLeft";
+
+pub fn is_clock_class(class: &str) -> bool {
+    class == CLOCK_CLASS || class == CLOCK_CLASS_LEFT
+}
 pub const CLOCK_AID: &str = "SystemTrayIcon";
 
 #[derive(Clone, Debug)]
@@ -97,8 +103,11 @@ impl Scanner {
     pub fn new() -> windows::core::Result<Self> {
         unsafe {
             let uia: IUIAutomation = CoCreateInstance(&CUIAutomation, None, CLSCTX_INPROC_SERVER)?;
-            let cond =
+            let c1 =
                 uia.CreatePropertyCondition(UIA_ClassNamePropertyId, &VARIANT::from(CLOCK_CLASS))?;
+            let c2 = uia
+                .CreatePropertyCondition(UIA_ClassNamePropertyId, &VARIANT::from(CLOCK_CLASS_LEFT))?;
+            let cond = uia.CreateOrCondition(&c1, &c2)?;
             let button_cond = uia.CreatePropertyCondition(
                 UIA_ControlTypePropertyId,
                 &VARIANT::from(UIA_ButtonControlTypeId.0),
@@ -143,7 +152,7 @@ impl Scanner {
                 let e = arr.GetElement(i)?;
                 let b = Self::btn_of(&e);
                 // The condition already filters by class; belt and braces.
-                if b.class_name == CLOCK_CLASS {
+                if is_clock_class(&b.class_name) {
                     out.buttons.push(b);
                     elems.push(e);
                 }
@@ -164,7 +173,7 @@ impl Scanner {
     pub fn probe(&self, e: &IUIAutomationElement) -> Result<Btn, String> {
         let rect = unsafe { e.CurrentBoundingRectangle() }.map_err(|e| format!("{e}"))?;
         let class = bstr(unsafe { e.CurrentClassName() });
-        if class != CLOCK_CLASS {
+        if !is_clock_class(&class) {
             return Err(format!("class changed to '{class}'"));
         }
         let b = Self::btn_with_rect(e, rect);
@@ -206,10 +215,10 @@ pub fn pick_clock(btns: &[Btn]) -> Option<(usize, &'static str)> {
             .max_by_key(|(_, b)| b.rect.right)
             .map(|(i, _)| i)
     };
-    if let Some(i) = rightmost(&|b| b.class_name == CLOCK_CLASS && b.automation_id == CLOCK_AID) {
+    if let Some(i) = rightmost(&|b| is_clock_class(&b.class_name) && b.automation_id == CLOCK_AID) {
         return Some((i, "rule1:class+automationid"));
     }
-    rightmost(&|b| b.class_name == CLOCK_CLASS).map(|i| (i, "rule2:fallback-rightmost-omnibutton"))
+    rightmost(&|b| is_clock_class(&b.class_name)).map(|i| (i, "rule2:fallback-rightmost-omnibutton"))
 }
 
 #[cfg(test)]
@@ -231,6 +240,17 @@ mod tests {
     fn rule1_prefers_automation_id_over_rightmost() {
         let v = [b("SystemTrayIcon", 100), b("Other", 300)];
         assert_eq!(pick_clock(&v), Some((0, "rule1:class+automationid")));
+    }
+
+    #[test]
+    fn clock_class_accepts_left_variant_only_for_clock() {
+        assert!(is_clock_class("SystemTray.OmniButton"));
+        assert!(is_clock_class("SystemTray.OmniButtonLeft"));
+        assert!(!is_clock_class("SystemTray.OmniButtonRight"));
+        assert!(!is_clock_class("SystemTray.OmniButtonCenter"));
+        let mut v = b("SystemTrayIcon", 100);
+        v.class_name = CLOCK_CLASS_LEFT.into();
+        assert_eq!(pick_clock(&[v]), Some((0, "rule1:class+automationid")));
     }
 
     #[test]
