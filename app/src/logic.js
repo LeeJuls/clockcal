@@ -199,7 +199,7 @@ ${e.id}`;
     if (/[\u0000-\u001f\u007f-\u009f\s\\]/u.test(url)) return false;
     if (!url.startsWith("https://")) return false; // case-sensitive scheme
     const authority = url.slice(8).split(/[/?#]/)[0];
-    const anyPath = authority === "calendar.google.com" || authority === "meet.google.com";
+    const anyPath = authority === "calendar.google.com" || authority === "meet.google.com" || authority === "console.cloud.google.com";
     if (!anyPath && authority !== "www.google.com") return false;
     try {
       const u = new URL(url);

@@ -337,7 +337,17 @@
       box.classList.add("guide");
       box.appendChild(h("div", "hint", S.needClient));
       const ol = h("ol", "guide-steps");
-      S.clientSteps.forEach((t) => ol.appendChild(h("li", "", t)));
+      S.clientSteps.forEach((parts) => {
+        const li = h("li");
+        for (const part of parts) {
+          if (typeof part === "string") { li.appendChild(document.createTextNode(part)); continue; }
+          const a = h("a", "ext-link", part.t);
+          a.href = part.u;
+          a.addEventListener("click", (e) => { e.preventDefault(); openLink(part.u); });
+          li.appendChild(a);
+        }
+        ol.appendChild(li);
+      });
       box.appendChild(ol);
       const ib = h("div", "import-box");
       const fb = h("button", "primary-btn", S.importFile);

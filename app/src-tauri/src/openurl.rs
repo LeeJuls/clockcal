@@ -4,7 +4,7 @@
 //! boundary, so the same decision is re-made here in Rust with a stricter allow-list.
 
 /// Hosts allowed with any path.
-const ANY_PATH_HOSTS: [&str; 2] = ["calendar.google.com", "meet.google.com"];
+const ANY_PATH_HOSTS: [&str; 3] = ["calendar.google.com", "meet.google.com", "console.cloud.google.com"];
 /// Host allowed only under `/calendar`.
 const CALENDAR_PATH_HOST: &str = "www.google.com";
 
@@ -94,6 +94,9 @@ mod tests {
             "https://meet.google.com/abc-defg-hij?authuser=1",
             "https://www.google.com/calendar",
             "https://www.google.com/calendar/event?eid=1",
+            "https://console.cloud.google.com/projectcreate",
+            "https://console.cloud.google.com/apis/library/calendar-json.googleapis.com",
+            "https://console.cloud.google.com/auth/audience",
         ] {
             assert!(validate_url(u).is_ok(), "{u}");
         }
@@ -121,6 +124,11 @@ mod tests {
             "file:///C:/Windows/System32/calc.exe",
             "data:text/html,hi",
             "//calendar.google.com/",
+            "https://console.cloud.google.com.evil.com/",
+            "https://console.cloud.google.com@evil.com/",
+            "https://evil.com@console.cloud.google.com/",
+            "https://console.cloud.google.com:8443/",
+            "http://console.cloud.google.com/",
             "calendar.google.com",
             "https://www.google.com/",
             "https://www.google.com/search?q=x",

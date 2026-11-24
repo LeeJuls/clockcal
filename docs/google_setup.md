@@ -4,17 +4,17 @@ clockcal 은 설치 파일에 구글 로그인 정보(OAuth 클라이언트)를 
 
 ## 절차
 
-1. https://console.cloud.google.com 에 구글 계정으로 접속해 **새 프로젝트**를 만듭니다 (이름 예: `clockcal`).
-2. **API 및 서비스 → 라이브러리**에서 **Google Calendar API**를 찾아 **사용**을 누릅니다.
-3. **API 및 서비스 → OAuth 동의 화면** (Google Auth platform)
+1. [Google Cloud 콘솔](https://console.cloud.google.com/projectcreate)에 구글 계정으로 접속해 **새 프로젝트**를 만듭니다 (이름 예: `clockcal`).
+2. **API 및 서비스 → 라이브러리**에서 [**Google Calendar API**](https://console.cloud.google.com/apis/library/calendar-json.googleapis.com)를 찾아 **사용**을 누릅니다.
+3. [**API 및 서비스 → OAuth 동의 화면**](https://console.cloud.google.com/apis/credentials/consent) (Google Auth platform)
    - 사용자 유형(대상): **외부(External)**
    - 앱 이름 `clockcal`, 지원 이메일·개발자 이메일은 본인 Gmail
    - **데이터 액세스(범위)** 에 아래 두 개를 추가합니다.
      - `https://www.googleapis.com/auth/calendar.events`
      - `https://www.googleapis.com/auth/calendar.readonly`
-4. **대상(Audience)** 에서 게시 상태를 **프로덕션으로 게시(Publish app)** 합니다. 검증 신청은 하지 않습니다.
+4. [**대상(Audience)**](https://console.cloud.google.com/auth/audience) 에서 게시 상태를 **프로덕션으로 게시(Publish app)** 합니다. 검증 신청은 하지 않습니다.
    - "테스트" 상태로 두면 **7일 뒤 로그인이 풀립니다.** 꼭 프로덕션으로 바꾸세요.
-5. **사용자 인증 정보 → 사용자 인증 정보 만들기 → OAuth 클라이언트 ID** → 애플리케이션 유형 **데스크톱 앱** → 만들기.
+5. [**사용자 인증 정보**](https://console.cloud.google.com/apis/credentials) → **사용자 인증 정보 만들기 → OAuth 클라이언트 ID** → 애플리케이션 유형 **데스크톱 앱** → 만들기.
 6. 만들어진 클라이언트의 **JSON 다운로드**를 누릅니다.
 7. clockcal 을 열면 "내 구글 캘린더를 연결하세요" 화면이 나옵니다. **JSON 파일 가져오기**로 받은 파일을 선택합니다(내용을 붙여넣어도 됩니다).
 8. **구글 캘린더 연결**을 누르고 브라우저에서 로그인합니다.

@@ -145,10 +145,11 @@ t("isSafeLink mirrors Rust allowlist (openurl.rs)", () => {
     "https://calendar.google.com/calendar/event?eid=abc", "https://calendar.google.com/", "https://calendar.google.com",
     "https://meet.google.com/abc-defg-hij", "https://meet.google.com/abc-defg-hij?authuser=1",
     "https://www.google.com/calendar", "https://www.google.com/calendar/render", "https://www.google.com/calendar/event?eid=1",
+    "https://console.cloud.google.com/projectcreate",
   ]) assert.ok(L.isSafeLink(u), u);
   for (const u of [
     "https://drive.google.com/x", "https://g.co/x", "https://accounts.google.com/", "http://calendar.google.com/",
-    "https://calendar.google.com.evil.com/", "https://calendar.google.com@evil.com/", "https://evil.com@calendar.google.com/",
+    "https://calendar.google.com.evil.com/", "https://console.cloud.google.com.evil.com/", "https://evil.com@console.cloud.google.com/", "https://console.cloud.google.com:8443/", "https://calendar.google.com@evil.com/", "https://evil.com@calendar.google.com/",
     "https://user:pw@calendar.google.com/", "https://calendar.google.com:443/", "https://calendar.google.com:8443/",
     "https://CALENDAR.GOOGLE.COM/", "HTTPS://calendar.google.com/", "https://calendar.google.com\\@evil.com/",
     "https://calendar.google.com%2f@evil.com/", "https://calendar.google.com /", " https://calendar.google.com/",
@@ -267,6 +268,13 @@ t("dedupe: respond via the primary copy (self_attendee) even if a shared copy ca
   assert.equal(out.length, 1);
   assert.equal(out[0].calendar_id, "me@x"); assert.equal(out[0].self_attendee, true);
   assert.equal(out[0].response, "needsAction"); assert.equal(out[0].calendar_color, "#111111");
+});
+
+
+t("every link in the client guide passes isSafeLink", () => {
+  let n = 0;
+  for (const parts of S.clientSteps) for (const p of parts) if (typeof p !== "string") { n++; assert.ok(L.isSafeLink(p.u), p.u); }
+  assert.ok(n >= 5);
 });
 
 console.log(`\n${pass} passed (TZ=${process.env.TZ || "system"})`);

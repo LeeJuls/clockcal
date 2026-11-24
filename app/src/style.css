@@ -220,3 +220,5 @@ button { font: inherit; color: inherit; }
 .mini-btn:hover { background: var(--hover); }
 .import-box { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 .import-box textarea { width: 100%; box-sizing: border-box; height: 72px; resize: none; font: 11px Consolas, monospace; background: transparent; color: var(--text); border: 1px solid var(--divider); border-radius: 4px; padding: 4px; }
+
+.ext-link { color: var(--accent); text-decoration: underline; cursor: pointer; }
