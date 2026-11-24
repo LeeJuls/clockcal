@@ -1,0 +1,55 @@
+[package]
+name = "clockcal"
+version = "0.1.0"
+edition = "2021"
+description = "Taskbar clock Google Calendar popup"
+
+[lib]
+name = "clockcal_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-global-shortcut = "2"
+# P4-b: Win11 acrylic backdrop for the popup.
+window-vibrancy = "0.8"
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_HiDpi",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_SystemInformation",
+    "Win32_Security",
+    "Win32_Security_Credentials",
+    "Win32_UI_Shell",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_System_Registry",
+] }
+# P3-a OAuth. reqwest/serde/serde_json are already in the tree via tauri;
+# native-tls = Windows SChannel (no rustls/ring).
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "native-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+# P3-b: local-time month boundaries (already in the tree via tauri deps).
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+getrandom = "0.3"
+url = "2"
+# UIA (COM) for the clock rect; same version as clockcal/poc.
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Accessibility",
+    "Win32_System_Com",
+    "Win32_System_Variant",
+    "Win32_System_Ole",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Performance",
+    "Win32_System_Threading",
+    "Win32_Graphics_Gdi",
+] }
+tauri-plugin-notification = "2"

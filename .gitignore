@@ -1,0 +1,18 @@
+# build output / deps
+node_modules/
+dist/
+target/
+app/src-tauri/gen/
+# runtime data and secrets
+logs/
+*.log
+profiles/
+client_secret*.json
+embedded_client.json
+.env
+# private working notes
+docs/dev/publish_plan.md
+# OS / editor
+Thumbs.db
+.vscode/
+.idea/
